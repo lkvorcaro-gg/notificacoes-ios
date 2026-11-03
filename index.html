@@ -534,10 +534,16 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* PALCO DE NOTIFICAÇÕES */
+    /* PALCO DE NOTIFICAÇÕES (COM TRANSPARÊNCIA / VIDRO FOSCO) */
     #palco-notificacoes {
       width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 9px;
-      overflow-y: auto; max-height: 60vh; padding-bottom: 20px; scrollbar-width: none; z-index: 5;
+      overflow-y: auto; max-height: 60vh; padding: 12px; scrollbar-width: none; z-index: 5;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
     }
     #palco-notificacoes::-webkit-scrollbar { display: none; }
 
@@ -550,10 +556,10 @@
       border: 0.5px solid rgba(255,255,255,0.22);
       display: flex; align-items: center; gap: 13px;
       animation: surgirCard 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      transform-origin: top center;
+      transform-origin: bottom center;
     }
     @keyframes surgirCard {
-      0% { opacity: 0; transform: translateY(-28px) scale(0.93); }
+      0% { opacity: 0; transform: translateY(28px) scale(0.93); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
@@ -1142,7 +1148,9 @@
                 <div class="texto-msg-notif">${item.msg}</div>
               </div>
             `;
-            palco.prepend(card);
+            // Alterado de prepend para appendChild para as novas notificações entrarem embaixo e empurrarem as outras para cima
+            palco.appendChild(card);
+            palco.scrollTop = palco.scrollHeight;
           }, tempo);
           timeouts.push(tId);
         });
