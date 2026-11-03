@@ -1033,7 +1033,7 @@
             sigla: '<img src="nubanklogo.png" onerror="this.outerHTML=\'Nu\'">',
             titulo: 'Transferência recebida',
             gerarMsg: (val) => {
-              const nomeNu = document.getElementById('rem-nu').value.trim() || 'Lucas Hipper Souza';
+              const nomeNu = document.getElementById('rem-nu').value.trim() || '';
               const tipoNu = document.getElementById('tipo-rem-nu').value;
               return tipoNu === 'empresa'
                 ? `Você recebeu uma transferência Pix de R$ ${val} da empresa ${nomeNu}.`
@@ -1063,7 +1063,7 @@
             sigla: '<img src="interlogo.png" onerror="this.outerHTML=\'IN\'">',
             titulo: 'Pix Recebido com Sucesso',
             gerarMsg: (val) => {
-              const nomeInter = document.getElementById('rem-inter').value.trim() || 'Pagamentos Digitais LTDA';
+              const nomeInter = document.getElementById('rem-inter').value.trim() || '';
               const tipoInter = document.getElementById('tipo-rem-inter').value;
               return tipoInter === 'empresa'
                 ? `Pix de R$ ${val} recebido da empresa ${nomeInter} na sua conta.`
