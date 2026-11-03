@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Notificações Fakes iOS Pro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      background: #040406; 
+      color: #fff; 
+      min-height: 100vh; 
+      overflow-x: hidden; 
+      position: relative;
+    }
+
+    /* LUZES DE FUNDO ANIMADAS (AURORA NEON) */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(110px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      animation: flutuarLuzes 14s infinite alternate ease-in-out;
+    }
+    body::before {
+      top: -100px;
+      left: -120px;
+      background: radial-gradient(circle, #820ad1, #0071e3);
+    }
+    body::after {
+      bottom: -100px;
+      right: -120px;
+      background: radial-gradient(circle, #11c76f, #ff7a00);
+      animation-delay: -7s;
+    }
+
+    @keyframes flutuarLuzes {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(60px, 80px) scale(1.18); }
+      100% { transform: translate(-40px, 120px) scale(0.92); }
+    }
+
+    /* CONTROLE DE TELA */
+    .ctrl-check { display: none; }
+    #toggle-cena:checked ~ #painel-diretor { display: none !important; }
+    #toggle-cena:checked ~ #tela-bloqueio-ios { display: flex !important; }
+
+    /* ============================================================
+                            PAINEL DE DIREÇÃO
+       ============================================================ */
+    #painel-diretor {
+      padding: 36px 18px 60px; 
+      max-width: 540px; 
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes entradaCard {
+      0% { opacity: 0; transform: translateY(35px) scale(0.94); filter: blur(6px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes flutuarIcone {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-3px) rotate(2deg); }
+    }
+
+    @keyframes pulsoStatus {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.4; }
+    }
+
+    @keyframes varreduraBrilho {
+      0% { left: -150%; }
+      35%, 100% { left: 200%; }
+    }
+
+    @keyframes gradienteVivo {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* CABEÇALHO DO PAINEL */
+    .topo-painel {
+      text-align: center;
+      margin-bottom: 28px;
+      animation: entradaCard 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+
+    .badge-diretor {
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px;
+      background: rgba(0, 113, 227, 0.14); 
+      border: 1px solid rgba(41, 151, 255, 0.45);
+      color: #66b8ff; 
+      font-size: 11px; 
+      font-weight: 800; 
+      padding: 7px 16px;
+      border-radius: 99px; 
+      margin-bottom: 14px; 
+      text-transform: uppercase; 
+      letter-spacing: 1.4px;
+      box-shadow: 0 0 25px rgba(0, 113, 227, 0.3), inset 0 0 10px rgba(41, 151, 255, 0.2);
+      backdrop-filter: blur(12px);
+    }
+    .badge-diretor::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #2997ff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #2997ff;
+      animation: pulsoStatus 1.8s infinite;
+    }
+
+    h1 { 
+      font-size: 31px; 
+      font-weight: 900; 
+      background: linear-gradient(135deg, #ffffff 0%, #c4c4cc 50%, #52abff 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px; 
+      letter-spacing: -0.9px; 
+      animation: gradienteVivo 5s infinite;
+    }
+
+    p.sub { 
+      font-size: 13.5px; 
+      color: #9ca3af; 
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.45; 
+    }
+
+    /* CARDS DOS APLICATIVOS COM CORES DINÂMICAS */
+    .grupo-campo { 
+      --cor-tema: #2997ff;
+      margin-bottom: 20px; 
+      background: linear-gradient(160deg, rgba(24, 24, 30, 0.85) 0%, rgba(12, 12, 16, 0.92) 100%); 
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      border-top: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 22px; 
+      padding: 18px; 
+      box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.7), 0 0 25px -8px color-mix(in srgb, var(--cor-tema) 25%, transparent);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: entradaCard 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* BARRA LATERAL NEON DO CARD */
+    .grupo-campo::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--cor-tema);
+      box-shadow: 0 0 16px var(--cor-tema);
+      transition: all 0.4s ease;
+    }
+
+    /* FEIXE DE LUZ QUE ATRAVESSA O CARD */
+    .grupo-campo::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+      transform: skewX(-25deg);
+      animation: varreduraBrilho 7s infinite;
+      pointer-events: none;
+    }
+
+    .grupo-campo:nth-of-type(1) { animation-delay: 0.08s; }
+    .grupo-campo:nth-of-type(2) { animation-delay: 0.16s; }
+    .grupo-campo:nth-of-type(3) { animation-delay: 0.24s; }
+    .grupo-campo:nth-of-type(4) { animation-delay: 0.32s; }
+    .grupo-campo:nth-of-type(5) { animation-delay: 0.40s; }
+    .grupo-campo:nth-of-type(6) { animation-delay: 0.48s; }
+    .grupo-campo:nth-of-type(7) { animation-delay: 0.56s; }
+
+    .grupo-campo:hover {
+      transform: translateY(-4px) scale(1.01);
+      border-color: color-mix(in srgb, var(--cor-tema) 50%, rgba(255,255,255,0.2));
+      box-shadow: 0 22px 44px -12px rgba(0, 0, 0, 0.85), 0 0 35px -5px color-mix(in srgb, var(--cor-tema) 45%, transparent);
+    }
+
+    /* QUANDO O APP ESTÁ DESATIVADO (SEM EXIBIR), FICA ESCURECIDO */
+    .grupo-campo:has(h3 input[type="checkbox"]:not(:checked)) {
+      opacity: 0.5;
+      filter: grayscale(0.75);
+      transform: scale(0.985);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+    }
+    .grupo-campo:has(h3 input[type="checkbox"]:not(:checked))::before {
+      background: #3f3f46;
+      box-shadow: none;
+    }
+
+    /* CABEÇALHO DO CARD COM ÍCONE PNG REAL */
+    .grupo-campo h3 { 
+      font-size: 16px; 
+      font-weight: 800; 
+      color: #fff; 
+      margin-bottom: 16px; 
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      letter-spacing: -0.3px;
+    }
+
+    .app-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icone-painel-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--cor-tema);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 15px;
+      color: #fff;
+      box-shadow: 0 6px 18px color-mix(in srgb, var(--cor-tema) 60%, transparent), inset 0 1px 1px rgba(255,255,255,0.4);
+      overflow: hidden;
+      position: relative;
+      animation: flutuarIcone 3.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .icone-painel-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .titulo-app-bloco {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .titulo-app-bloco small {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--cor-tema);
+      filter: brightness(1.3);
+    }
+
+    .linha-grid { display: flex; gap: 12px; }
+    .col-grid { flex: 1; }
+
+    label.lbl-rotulo { 
+      display: block; 
+      font-size: 10.5px; 
+      font-weight: 700; 
+      color: #a1a1aa; 
+      margin-bottom: 6px; 
+      text-transform: uppercase; 
+      letter-spacing: 0.6px; 
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%; 
+      padding: 11px 13px; 
+      border-radius: 12px; 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(8, 8, 12, 0.75); 
+      color: #fff; 
+      font-size: 13.5px; 
+      font-weight: 600;
+      outline: none; 
+      margin-bottom: 12px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+    }
+    input[type="text"]:hover, input[type="number"]:hover, select:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(16, 16, 22, 0.9);
+    }
+    input:focus, select:focus { 
+      border-color: var(--cor-tema); 
+      background: rgba(18, 20, 28, 0.95);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-tema) 28%, transparent), inset 0 1px 2px rgba(0,0,0,0.2);
+      transform: translateY(-1px);
+    }
+
+    input[type="file"] {
+      width: 100%;
+      background: rgba(8, 8, 12, 0.75);
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      color: #a1a1aa;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    input[type="file"]:hover {
+      border-color: #2997ff;
+      background: rgba(0, 113, 227, 0.08);
+      color: #fff;
+    }
+    input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, #0071e3, #2997ff);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 11.5px;
+      margin-right: 12px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    input[type="file"]::file-selector-button:hover {
+      transform: scale(1.04);
+    }
+
+    .box-remetente-exclusivo {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      border-radius: 14px; 
+      padding: 12px; 
+      margin-bottom: 12px;
+    }
+    .box-remetente-exclusivo input, .box-remetente-exclusivo select { margin-bottom: 0; }
+
+    /* CHAVE SELETORA (SWITCH) COM LED PULSANTE */
+    .check-card {
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 99px; 
+      font-size: 11.5px; 
+      font-weight: 700; 
+      color: #a1a1aa; 
+      cursor: pointer; 
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .check-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .check-card:has(input:checked) {
+      background: color-mix(in srgb, var(--cor-tema) 22%, rgba(0,0,0,0.6));
+      border-color: var(--cor-tema);
+      color: #fff;
+      box-shadow: 0 0 18px color-mix(in srgb, var(--cor-tema) 35%, transparent);
+    }
+    .check-card input { 
+      appearance: none;
+      -webkit-appearance: none;
+      width: 32px; 
+      height: 18px; 
+      background: #3f3f46;
+      border-radius: 99px;
+      position: relative;
+      cursor: pointer; 
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+    .check-card input::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+    .check-card input:checked {
+      background: var(--cor-tema);
+    }
+    .check-card input:checked::after {
+      transform: translateX(14px);
+    }
+
+    .box-variacao-app {
+      margin-top: 6px; 
+      padding-top: 12px; 
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+    .header-variacao {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 10px;
+    }
+    .header-variacao span { font-size: 12.5px; color: #e4e4e7; font-weight: 600; }
+
+    /* ANIMAÇÃO QUANDO ABRE A ABA DE VARIAR VALORES */
+    #ctrl-var-nu, #ctrl-var-pag, #ctrl-var-kiwi, #ctrl-var-inter, #ctrl-var-braip, #ctrl-var-picpay {
+      animation: entradaCard 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* BOTÃO PRINCIPAL DE DISPARO COM PULSO E REFLEXO */
+    .btn-gravar-cena {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%; 
+      text-align: center; 
+      margin-top: 30px;
+      padding: 19px; 
+      border-radius: 18px; 
+      background: linear-gradient(135deg, #0071e3 0%, #2997ff 35%, #7c3aed 70%, #0071e3 100%);
+      background-size: 250% 250%;
+      color: #fff;
+      font-size: 16.5px; 
+      font-weight: 800; 
+      letter-spacing: -0.2px;
+      cursor: pointer; 
+      box-shadow: 0 12px 35px rgba(0, 113, 227, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: entradaCard 0.8s ease-out backwards, gradienteVivo 4s ease infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-gravar-cena::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      transform: skewX(-25deg);
+      animation: varreduraBrilho 3.5s infinite;
+    }
+    .btn-gravar-cena:hover {
+      transform: translateY(-3px) scale(1.015);
+      box-shadow: 0 18px 42px rgba(41, 151, 255, 0.75), inset 0 1px 2px rgba(255, 255, 255, 0.65);
+    }
+    .btn-gravar-cena:active { 
+      transform: scale(0.97) translateY(0); 
+    }
+
+    /* RODAPÉ DE ASSINATURA PREMIUM */
+    .assinatura-dev {
+      margin-top: 38px;
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.8px;
+      text-transform: uppercase;
+      color: #8e8e98;
+      animation: entradaCard 0.9s ease-out backwards;
+      position: relative;
+      overflow: hidden;
+    }
+    .assinatura-dev span {
+      background: linear-gradient(90deg, #2997ff, #c084fc, #34d399, #2997ff);
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+      font-size: 12.5px;
+      animation: gradienteVivo 3.5s linear infinite;
+      filter: drop-shadow(0 0 10px rgba(41, 151, 255, 0.35));
+    }
+
+    /* ============================================================
+       TELA DE BLOQUEIO IDÊNTICA À SUA IMAGEM DE REFERÊNCIA
+       ============================================================ */
+    #tela-bloqueio-ios {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background-color: #164096;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1170 2532' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23b5d5e6'/%3E%3Cstop offset='40%25' stop-color='%234377c9'/%3E%3Cstop offset='100%25' stop-color='%230c2174'/%3E%3C/linearGradient%3E%3ClinearGradient id='topLight' x1='0%25' y1='0%25' x2='75%25' y2='85%25'%3E%3Cstop offset='0%25' stop-color='%23d4ebf2'/%3E%3Cstop offset='50%25' stop-color='%23a6cde2'/%3E%3Cstop offset='100%25' stop-color='%235b91d6'/%3E%3C/linearGradient%3E%3ClinearGradient id='blueSphere' x1='15%25' y1='10%25' x2='90%25' y2='90%25'%3E%3Cstop offset='0%25' stop-color='%233d6dc2'/%3E%3Cstop offset='55%25' stop-color='%231d439b'/%3E%3Cstop offset='100%25' stop-color='%230b1f6c'/%3E%3C/linearGradient%3E%3ClinearGradient id='tealWave' x1='10%25' y1='0%25' x2='85%25' y2='95%25'%3E%3Cstop offset='0%25' stop-color='%2374bfb6'/%3E%3Cstop offset='38%25' stop-color='%23b2e3dd'/%3E%3Cstop offset='75%25' stop-color='%236ec2ba'/%3E%3Cstop offset='100%25' stop-color='%232e7b91'/%3E%3C/linearGradient%3E%3ClinearGradient id='bottomSweep' x1='0%25' y1='15%25' x2='100%25' y2='95%25'%3E%3Cstop offset='0%25' stop-color='%23163b96'/%3E%3Cstop offset='45%25' stop-color='%235190d9'/%3E%3Cstop offset='90%25' stop-color='%23bad6eb'/%3E%3Cstop offset='100%25' stop-color='%23cee2f0'/%3E%3C/linearGradient%3E%3Cfilter id='softShadow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='0' dy='28' stdDeviation='38' flood-color='%2305103a' flood-opacity='0.48'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='1170' height='2532' fill='url(%23bg)'/%3E%3Cpath d='M0,0 L1170,0 L1170,1300 C850,1350 420,1050 0,720 Z' fill='url(%23topLight)'/%3E%3Ccircle cx='920' cy='580' r='550' fill='url(%23blueSphere)' filter='url(%23softShadow)'/%3E%3Ccircle cx='210' cy='1580' r='670' fill='url(%23tealWave)' filter='url(%23softShadow)'/%3E%3Cpath d='M-100,2340 C340,2240 730,1780 990,1260 C1120,1000 1210,740 1260,550 L1260,2600 L-100,2600 Z' fill='url(%23bottomSweep)' filter='url(%23softShadow)'/%3E%3Cpath d='M-100,2340 C340,2240 730,1780 990,1260' fill='none' stroke='%23ffffff' stroke-width='5' stroke-opacity='0.45'/%3E%3C/svg%3E");
+      background-size: cover; background-position: center;
+      flex-direction: column; align-items: center;
+      padding: env(safe-area-inset-top, 14px) 16px env(safe-area-inset-bottom, 22px);
+      user-select: none; -webkit-user-select: none;
+    }
+
+    /* BARRA DE STATUS SUPERIOR (COM DYNAMIC ISLAND, SINAL, WIFI E BATERIA) */
+    .barra-topo-ios {
+      width: 100%; max-width: 420px; display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 10px 0; margin-bottom: 26px; position: relative; height: 38px;
+    }
+    .espaco-esq-topo { width: 78px; }
+
+    .dynamic-island {
+      width: 122px; height: 35px; background: #000; border-radius: 99px;
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 11px; box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
+    }
+    .camera-lens {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #253861 0%, #0d1322 55%, #050508 100%);
+      box-shadow: inset 0 0 2px rgba(255,255,255,0.2);
+    }
+
+    .status-icons-ios {
+      display: flex; align-items: center; gap: 6px; color: #fff;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+    }
+
+    /* DATA E RELÓGIO */
+    .data-ios {
+      font-size: 19px; font-weight: 600; color: #ffffff;
+      letter-spacing: -0.2px; margin-bottom: -4px;
+      text-shadow: 0 1px 8px rgba(12, 33, 116, 0.35);
+      text-align: center;
+    }
+
+    .relogio-ios-17 {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+      font-weight: 700; font-size: 98px; color: #ffffff;
+      letter-spacing: -3.5px; line-height: 1.02; margin-bottom: 18px;
+      text-shadow: 0 4px 24px rgba(15, 42, 118, 0.32);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* PALCO DE NOTIFICAÇÕES */
+    #palco-notificacoes {
+      width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 9px;
+      overflow-y: auto; max-height: 55vh; padding-bottom: 20px; scrollbar-width: none; z-index: 5;
+    }
+    #palco-notificacoes::-webkit-scrollbar { display: none; }
+
+    .card-ios-notif {
+      background: rgba(35, 48, 74, 0.58);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border-radius: 22px; padding: 13px 15px;
+      box-shadow: 0 10px 28px rgba(0, 12, 40, 0.28);
+      border: 0.5px solid rgba(255,255,255,0.22);
+      display: flex; align-items: center; gap: 13px;
+      animation: surgirCard 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: top center;
+    }
+    @keyframes surgirCard {
+      0% { opacity: 0; transform: translateY(-28px) scale(0.93); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .app-icone-ios {
+      width: 38px; height: 38px; border-radius: 9.5px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+      overflow: hidden;
+    }
+    .app-icone-ios img { width: 100%; height: 100%; object-fit: cover; border-radius: 9.5px; display: block; }
+
+    .corpo-notif { flex: 1; min-width: 0; }
+    .topo-notif { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+    .nome-app-notif { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); }
+    .tempo-notif { font-size: 11.5px; color: rgba(255,255,255,0.65); font-weight: 400; }
+    .titulo-msg-notif { font-size: 14.5px; font-weight: 600; color: #fff; letter-spacing: -0.2px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .texto-msg-notif { font-size: 13.5px; color: rgba(255,255,255,0.92); line-height: 1.3; letter-spacing: -0.1px; }
+
+    /* BOTÕES INFERIORES DE LANTERNA E CÂMERA */
+    .rodape-ios-17 {
+      position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 420px; padding: 0 44px;
+      display: flex; justify-content: space-between; align-items: center; pointer-events: none;
+    }
+    .botao-atalho-ios {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: rgba(30, 42, 58, 0.56);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.22), inset 0 0 0 0.5px rgba(255,255,255,0.16);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .botao-atalho-ios img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .botao-atalho-ios svg { width: 24px; height: 24px; display: block; }
+
+    .barra-home-ios {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 138px; height: 5px; border-radius: 99px; background: rgba(255,255,255,0.85);
+    }
+    .hotspot-sair {
+      position: absolute; top: 8px; left: 10px; z-index: 10002;
+      background: rgba(0,0,0,0.18); color: rgba(255,255,255,0.7); font-size: 10px; font-weight: 600;
+      padding: 4px 9px; border-radius: 99px; cursor: pointer; backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body>
+
+  <input type="checkbox" id="toggle-cena" class="ctrl-check">
+
+  <!-- PAINEL DE CONTROLE -->
+  <div id="painel-diretor">
+    <div class="topo-painel">
+      <span class="badge-diretor">NOTIFICAÇÕES FAKES IOS PRO</span>
+      <h1>Painel Premium de Notificações</h1>
+      <p class="sub">Configure individualmente a quantidade, remetente e valores.</p>
+    </div>
+
+    <!-- 1. NUBANK -->
+    <div class="grupo-campo" style="--cor-tema: #820ad1;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper">
+            <img src="nubanklogo.png" alt="Nubank" onerror="this.outerHTML='Nu'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Nubank</span>
+            <small>Transferência Pix</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-nu" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;">
+          <label class="lbl-rotulo">Nome do App:</label>
+          <input type="text" id="app-nu" value="Nubank">
+        </div>
+        <div class="col-grid" style="flex: 1;">
+          <label class="lbl-rotulo">Qtd. Notificações:</label>
+          <input type="number" id="qtd-nu" value="2" min="1" max="50">
+        </div>
+      </div>
+      <div class="box-remetente-exclusivo">
+        <div class="linha-grid">
+          <div class="col-grid" style="flex: 1;">
+            <label class="lbl-rotulo">Tipo (Nubank):</label>
+            <select id="tipo-rem-nu">
+              <option value="pessoa">Pessoa</option>
+              <option value="empresa">Empresa</option>
+            </select>
+          </div>
+          <div class="col-grid" style="flex: 2;">
+            <label class="lbl-rotulo">Nome da Pessoa / Empresa (Nubank):</label>
+            <input type="text" id="rem-nu" value="Lucas Hipper Souza">
+          </div>
+        </div>
+      </div>
+      <div id="box-fixo-nu">
+        <label class="lbl-rotulo">Valor Fixo em R$:</label>
+        <input type="text" id="val-nu" value="340,00">
+      </div>
+      <div class="box-variacao-app">
+        <div class="header-variacao">
+          <span>💸 Variar valores do Nubank</span>
+          <label class="check-card"><input type="checkbox" id="var-nu" onchange="alternarVariacao('nu')"> Variar</label>
+        </div>
+        <div id="ctrl-var-nu" class="linha-grid" style="display:none;">
+          <div class="col-grid"><label class="lbl-rotulo">Mínimo</label><input type="number" id="min-nu" value="50" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Máximo</label><input type="number" id="max-nu" value="850" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Centavos</label>
+            <select id="cent-nu"><option value="aleatorio">,xx</option><option value="zero">,00</option><option value="noventa">,90</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TIKTOK -->
+    <div class="grupo-campo" style="--cor-tema: #eab308;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper">
+            <img src="tiktoklogo.png" alt="TikTok" onerror="this.outerHTML='TK'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Tiktok</span>
+            <small>Recompensas & Shop</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-pag" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-pag" value="Tiktok"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-pag" value="2" min="1" max="50"></div>
+      </div>
+      <div id="box-fixo-pag"><label class="lbl-rotulo">Valor Fixo em R$:</label><input type="text" id="val-pag" value="197,90"></div>
+      <div class="box-variacao-app">
+        <div class="header-variacao">
+          <span>💸 Variar valores do Tiktok</span>
+          <label class="check-card"><input type="checkbox" id="var-pag" onchange="alternarVariacao('pag')"> Variar</label>
+        </div>
+        <div id="ctrl-var-pag" class="linha-grid" style="display:none;">
+          <div class="col-grid"><label class="lbl-rotulo">Mínimo</label><input type="number" id="min-pag" value="30" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Máximo</label><input type="number" id="max-pag" value="400" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Centavos</label>
+            <select id="cent-pag"><option value="aleatorio">,xx</option><option value="zero">,00</option><option value="noventa">,90</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. KIWIFY -->
+    <div class="grupo-campo" style="--cor-tema: #059669;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper">
+            <img src="kiwifylogo.png" alt="Kiwify" onerror="this.outerHTML='KW'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Kiwify</span>
+            <small>Comissões & Vendas</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-kiwi" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-kiwi" value="Kiwify"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-kiwi" value="3" min="1" max="50"></div>
+      </div>
+      <div id="box-fixo-kiwi"><label class="lbl-rotulo">Valor Fixo em R$:</label><input type="text" id="val-kiwi" value="497,00"></div>
+      <div class="box-variacao-app">
+        <div class="header-variacao">
+          <span>💸 Variar valores da Kiwify</span>
+          <label class="check-card"><input type="checkbox" id="var-kiwi" onchange="alternarVariacao('kiwi')"> Variar</label>
+        </div>
+        <div id="ctrl-var-kiwi" class="linha-grid" style="display:none;">
+          <div class="col-grid"><label class="lbl-rotulo">Mínimo</label><input type="number" id="min-kiwi" value="97" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Máximo</label><input type="number" id="max-kiwi" value="697" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Centavos</label>
+            <select id="cent-kiwi"><option value="noventa">,90</option><option value="zero">,00</option><option value="aleatorio">,xx</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. BANCO INTER -->
+    <div class="grupo-campo" style="--cor-tema: #ff7a00;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper">
+            <img src="interlogo.png" alt="Inter" onerror="this.outerHTML='IN'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Banco Inter</span>
+            <small>Recebimento Pix</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-inter" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-inter" value="Inter"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-inter" value="1" min="1" max="50"></div>
+      </div>
+      <div class="box-remetente-exclusivo">
+        <div class="linha-grid">
+          <div class="col-grid" style="flex: 1;">
+            <label class="lbl-rotulo">Tipo (Inter):</label>
+            <select id="tipo-rem-inter">
+              <option value="empresa">Empresa</option>
+              <option value="pessoa">Pessoa</option>
+            </select>
+          </div>
+          <div class="col-grid" style="flex: 2;">
+            <label class="lbl-rotulo">Nome da Pessoa / Empresa (Inter):</label>
+            <input type="text" id="rem-inter" value="Pagamentos Digitais LTDA">
+          </div>
+        </div>
+      </div>
+      <div id="box-fixo-inter"><label class="lbl-rotulo">Valor Fixo em R$:</label><input type="text" id="val-inter" value="250,00"></div>
+      <div class="box-variacao-app">
+        <div class="header-variacao">
+          <span>💸 Variar valores do Inter</span>
+          <label class="check-card"><input type="checkbox" id="var-inter" onchange="alternarVariacao('inter')"> Variar</label>
+        </div>
+        <div id="ctrl-var-inter" class="linha-grid" style="display:none;">
+          <div class="col-grid"><label class="lbl-rotulo">Mínimo</label><input type="number" id="min-inter" value="40" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Máximo</label><input type="number" id="max-inter" value="500" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Centavos</label>
+            <select id="cent-inter"><option value="aleatorio">,xx</option><option value="zero">,00</option><option value="noventa">,90</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. BRAIP -->
+    <div class="grupo-campo" style="--cor-tema: #9333ea;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper">
+            <img src="braiplogo.png" alt="Braip" onerror="this.outerHTML='BR'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Braip</span>
+            <small>Venda Aprovada</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-braip" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-braip" value="Braip"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-braip" value="2" min="1" max="50"></div>
+      </div>
+      <div id="box-fixo-braip"><label class="lbl-rotulo">Valor Fixo em R$:</label><input type="text" id="val-braip" value="197,00"></div>
+      <div class="box-variacao-app">
+        <div class="header-variacao">
+          <span>💸 Variar valores da Braip</span>
+          <label class="check-card"><input type="checkbox" id="var-braip" onchange="alternarVariacao('braip')"> Variar</label>
+        </div>
+        <div id="ctrl-var-braip" class="linha-grid" style="display:none;">
+          <div class="col-grid"><label class="lbl-rotulo">Mínimo</label><input type="number" id="min-braip" value="67" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Máximo</label><input type="number" id="max-braip" value="497" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Centavos</label>
+            <select id="cent-braip"><option value="noventa">,90</option><option value="zero">,00</option><option value="aleatorio">,xx</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. PICPAY -->
+    <div class="grupo-campo" style="--cor-tema: #11c76f;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper">
+            <img src="picpaylogo.png" alt="PicPay" onerror="this.outerHTML='PP'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>PicPay</span>
+            <small>Transferência Instantânea</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-picpay" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-picpay" value="PicPay"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-picpay" value="2" min="1" max="50"></div>
+      </div>
+      <div class="box-remetente-exclusivo">
+        <div class="linha-grid">
+          <div class="col-grid" style="flex: 1;">
+            <label class="lbl-rotulo">Tipo (PicPay):</label>
+            <select id="tipo-rem-picpay">
+              <option value="pessoa">Pessoa</option>
+              <option value="empresa">Empresa</option>
+            </select>
+          </div>
+          <div class="col-grid" style="flex: 2;">
+            <label class="lbl-rotulo">Nome da Pessoa / Empresa (PicPay):</label>
+            <input type="text" id="rem-picpay" value="Mariana Costa Silva">
+          </div>
+        </div>
+      </div>
+      <div id="box-fixo-picpay"><label class="lbl-rotulo">Valor Fixo em R$:</label><input type="text" id="val-picpay" value="180,00"></div>
+      <div class="box-variacao-app">
+        <div class="header-variacao">
+          <span>💸 Variar valores do PicPay</span>
+          <label class="check-card"><input type="checkbox" id="var-picpay" onchange="alternarVariacao('picpay')"> Variar</label>
+        </div>
+        <div id="ctrl-var-picpay" class="linha-grid" style="display:none;">
+          <div class="col-grid"><label class="lbl-rotulo">Mínimo</label><input type="number" id="min-picpay" value="25" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Máximo</label><input type="number" id="max-picpay" value="550" min="1"></div>
+          <div class="col-grid"><label class="lbl-rotulo">Centavos</label>
+            <select id="cent-picpay"><option value="aleatorio">,xx</option><option value="zero">,00</option><option value="noventa">,90</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES GERAIS DE CENA -->
+    <div class="grupo-campo" style="--cor-tema: #2997ff;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper" style="background: linear-gradient(135deg, #0071e3, #2997ff);">
+            ⚙️
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Ajustes Gerais da Cena</span>
+            <small>Sincronização & Wallpaper</small>
+          </div>
+        </div>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid"><label class="lbl-rotulo">Delay Inicial (s)</label><input type="number" id="cfg-delay" value="2" min="0"></div>
+        <div class="col-grid"><label class="lbl-rotulo">Intervalo (s)</label><input type="number" id="cfg-intervalo" value="1.0" step="0.2" min="0.2"></div>
+      </div>
+      <div class="linha-grid">
+        <div class="col-grid"><label class="lbl-rotulo">Texto da Data no Topo:</label><input type="text" id="cfg-data-topo" value="Monday, 11 November"></div>
+        <div class="col-grid"><label class="lbl-rotulo">Ordem das Notificações:</label>
+          <select id="cfg-ordem"><option value="embaralhada">Misturar Apps</option><option value="agrupada">Por App</option></select>
+        </div>
+      </div>
+      <label class="lbl-rotulo" style="margin-top:4px;">Papel de Parede Personalizado (Opcional)</label>
+      <input type="file" id="inputWallpaper" accept="image/*" style="font-size:12px; padding:8px;">
+    </div>
+
+    <label for="toggle-cena" class="btn-gravar-cena" id="btnDisparar">
+      🚀 Iniciar Tela de Bloqueio iOS Pro
+    </label>
+
+    <div class="assinatura-dev">
+      desenvolvido por <span>LK VORCARO</span>
+    </div>
+  </div>
+
+  <!-- TELA DE BLOQUEIO DO IOS -->
+  <div id="tela-bloqueio-ios">
+    <label for="toggle-cena" class="hotspot-sair">✕</label>
+
+    <!-- BARRA SUPERIOR -->
+    <div class="barra-topo-ios">
+      <div class="espaco-esq-topo"></div>
+      <div class="dynamic-island"><div class="camera-lens"></div></div>
+      <div class="status-icons-ios">
+        <!-- Sinal -->
+        <svg width="17" height="11" viewBox="0 0 17 11" fill="white">
+          <rect x="0" y="7" width="3" height="4" rx="1"/>
+          <rect x="4.5" y="5" width="3" height="6" rx="1"/>
+          <rect x="9" y="2.5" width="3" height="8.5" rx="1"/>
+          <rect x="13.5" y="0" width="3" height="11" rx="1"/>
+        </svg>
+        <!-- Wi-Fi -->
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="white">
+          <path d="M8 9.2a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8zm-3.2-2a4.7 4.7 0 0 1 6.4 0 .85.85 0 0 1-1.2 1.2 3 3 0 0 0-4 0 .85.85 0 0 1-1.2-1.2zm-2.8-2.6a8.6 8.6 0 0 1 12 0 .85.85 0 0 1-1.2 1.2 6.9 6.9 0 0 0-9.6 0 .85.85 0 0 1-1.2-1.2z"/>
+        </svg>
+        <!-- Bateria -->
+        <svg width="24" height="12" viewBox="0 0 25 12" fill="none">
+          <rect x="0.5" y="0.5" width="21" height="11" rx="3.2" stroke="white" stroke-opacity="0.45"/>
+          <rect x="2" y="2" width="18" height="8" rx="1.8" fill="white"/>
+          <path d="M23 4v4a2 2 0 0 0 0-4z" fill="white" fill-opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- DATA E RELÓGIO DA IMAGEM -->
+    <div class="data-ios" id="dataTopo">Monday, 11 November</div>
+    <div class="relogio-ios-17" id="relogioTopo">10:21</div>
+
+    <!-- PALCO DE NOTIFICAÇÕES -->
+    <div id="palco-notificacoes"></div>
+
+    <!-- BOTÕES INFERIORES -->
+    <div class="rodape-ios-17">
+      <div class="botao-atalho-ios">
+        <img src="lanterna.png" alt="Lanterna" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg style="display:none;" viewBox="0 0 24 24" fill="white">
+          <path d="M7.5 2h9c.55 0 1 .45 1 1v2.2c0 .4-.16.78-.44 1.06l-2.06 2.06V20.5c0 .83-.67 1.5-1.5 1.5h-3c-.83 0-1.5-.67-1.5-1.5V8.32L6.94 6.26A1.5 1.5 0 0 1 6.5 5.2V3c0-.55.45-1 1-1zm0 2.5h9v-.8h-9v.8zm4.5 6.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z"/>
+        </svg>
+      </div>
+      <div class="botao-atalho-ios">
+        <img src="camera.png" alt="Câmera" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <svg style="display:none;" viewBox="0 0 24 24" fill="white">
+          <path d="M9.4 4.5h5.2c.48 0 .92.26 1.15.68l.85 1.57h2.4c1.38 0 2.5 1.12 2.5 2.5v8.5c0 1.38-1.12 2.5-2.5 2.5H5c-1.38 0-2.5-1.12-2.5-2.5v-8.5c0-1.38 1.12-2.5 2.5-2.5h2.4l.85-1.57c.23-.42.67-.68 1.15-.68zM12 9.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 1.6a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8zm5.3-2.3a.85.85 0 1 0 0 1.7.85.85 0 0 0 0-1.7z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="barra-home-ios"></div>
+  </div>
+
+  <script>
+    let timeouts = [];
+    let audioCtx = null;
+
+    function alternarVariacao(idApp) {
+      const ativado = document.getElementById(`var-${idApp}`).checked;
+      document.getElementById(`ctrl-var-${idApp}`).style.display = ativado ? 'flex' : 'none';
+      document.getElementById(`box-fixo-${idApp}`).style.display = ativado ? 'none' : 'block';
+    }
+
+    function atualizarRelogio() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, '0');
+      const m = String(d.getMinutes()).padStart(2, '0');
+      document.getElementById('relogioTopo').textContent = `${h}:${m}`;
+    }
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
+
+    document.getElementById('inputWallpaper').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          document.getElementById('tela-bloqueio-ios').style.setProperty('background', `url(${evt.target.result}) center/cover no-repeat`, 'important');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function tocarSomAlerta() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1046.5, t);
+        osc.frequency.setValueAtTime(1567.98, t + 0.08);
+        g.gain.setValueAtTime(0.3, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(t); osc.stop(t + 0.4);
+      } catch (e) {}
+    }
+
+    function obterValorDoApp(idApp) {
+      const variar = document.getElementById(`var-${idApp}`).checked;
+      if (!variar) {
+        return document.getElementById(`val-${idApp}`).value || '100,00';
+      }
+
+      let min = parseFloat(document.getElementById(`min-${idApp}`).value) || 20;
+      let max = parseFloat(document.getElementById(`max-${idApp}`).value) || 500;
+      if (min > max) { const temp = min; min = max; max = temp; }
+
+      const modoCentavos = document.getElementById(`cent-${idApp}`).value;
+      const parteInteira = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      let centavos = 0;
+      if (modoCentavos === 'aleatorio') {
+        centavos = Math.floor(Math.random() * 100);
+      } else if (modoCentavos === 'noventa') {
+        centavos = 90;
+      }
+
+      const valorFinal = parteInteira + (centavos / 100);
+      return valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    document.getElementById('toggle-cena').addEventListener('change', function() {
+      if (this.checked) {
+        window.scrollTo(0, 0);
+        const palco = document.getElementById('palco-notificacoes');
+        palco.innerHTML = '';
+
+        const textoData = document.getElementById('cfg-data-topo').value.trim() || 'Monday, 11 November';
+        document.getElementById('dataTopo').textContent = textoData;
+
+        const delayInicial = parseFloat(document.getElementById('cfg-delay').value) || 2;
+        const intervalo = parseFloat(document.getElementById('cfg-intervalo').value) || 1.0;
+        const ordem = document.getElementById('cfg-ordem').value;
+
+        const catalogoApps = [
+          {
+            id: 'nu',
+            padraoNome: 'Nubank',
+            cor: '#820ad1',
+            sigla: '<img src="nubanklogo.png" onerror="this.outerHTML=\'Nu\'">',
+            titulo: 'Transferência recebida',
+            gerarMsg: (val) => {
+              const nomeNu = document.getElementById('rem-nu').value.trim() || 'Lucas Hipper Souza';
+              const tipoNu = document.getElementById('tipo-rem-nu').value;
+              return tipoNu === 'empresa'
+                ? `Você recebeu uma transferência Pix de R$ ${val} da empresa ${nomeNu}.`
+                : `Você recebeu uma transferência de R$ ${val} de ${nomeNu}.`;
+            }
+          },
+          {
+            id: 'pag',
+            padraoNome: 'Tiktok',
+            cor: '#eab308',
+            sigla: '<img src="tiktoklogo.png" onerror="this.outerHTML=\'TK\'">',
+            titulo: 'Pagamento recebido! 🎉',
+            gerarMsg: (val) => `You received R$ ${val} via Pix.`
+          },
+          {
+            id: 'kiwi',
+            padraoNome: 'Kiwify',
+            cor: '#059669',
+            sigla: '<img src="kiwifylogo.png" onerror="this.outerHTML=\'KW\'">',
+            titulo: 'Nova Venda Realizada',
+            gerarMsg: (val) => `Sua comissão de R$ ${val} já está disponível.`
+          },
+          {
+            id: 'inter',
+            padraoNome: 'Inter',
+            cor: '#ff7a00',
+            sigla: '<img src="interlogo.png" onerror="this.outerHTML=\'IN\'">',
+            titulo: 'Pix recebido com sucesso',
+            gerarMsg: (val) => {
+              const nomeInter = document.getElementById('rem-inter').value.trim() || 'Pagamentos Digitais LTDA';
+              const tipoInter = document.getElementById('tipo-rem-inter').value;
+              return tipoInter === 'empresa'
+                ? `Pix de R$ ${val} recebido da empresa ${nomeInter} na sua conta.`
+                : `Você recebeu um Pix de R$ ${val} enviado por ${nomeInter}.`;
+            }
+          },
+          {
+            id: 'braip',
+            padraoNome: 'Braip',
+            cor: '#6b21a8',
+            sigla: '<img src="braiplogo.png" onerror="this.outerHTML=\'BR\'">',
+            titulo: 'Venda Aprovada! 🚀',
+            gerarMsg: (val) => `Nova venda realizada! Sua comissão: R$ ${val}.`
+          },
+          {
+            id: 'picpay',
+            padraoNome: 'PicPay',
+            cor: '#11c76f',
+            sigla: '<img src="picpaylogo.png" onerror="this.outerHTML=\'PP\'">',
+            titulo: 'Você recebeu um Pix',
+            gerarMsg: (val) => {
+              const nomePicpay = document.getElementById('rem-picpay').value.trim() || 'Mariana Costa Silva';
+              const tipoPicpay = document.getElementById('tipo-rem-picpay').value;
+              return tipoPicpay === 'empresa'
+                ? `Você recebeu um Pix de R$ ${val} da empresa ${nomePicpay} no PicPay.`
+                : `Você recebeu um Pix de R$ ${val} de ${nomePicpay} na sua conta PicPay.`;
+            }
+          }
+        ];
+
+        let filaNotificacoes = [];
+
+        catalogoApps.forEach(item => {
+          const ativo = document.getElementById(`chk-${item.id}`).checked;
+          if (ativo) {
+            const qtdApp = parseInt(document.getElementById(`qtd-${item.id}`).value) || 1;
+            const nomeApp = document.getElementById(`app-${item.id}`).value || item.padraoNome;
+
+            for (let i = 0; i < qtdApp; i++) {
+              const valorGerado = obterValorDoApp(item.id);
+              filaNotificacoes.push({
+                app: nomeApp,
+                cor: item.cor,
+                sigla: item.sigla,
+                titulo: item.titulo,
+                msg: item.gerarMsg(valorGerado)
+              });
+            }
+          }
+        });
+
+        if (ordem === 'embaralhada') {
+          for (let i = filaNotificacoes.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [filaNotificacoes[i], filaNotificacoes[j]] = [filaNotificacoes[j], filaNotificacoes[i]];
+          }
+        }
+
+        timeouts.forEach(clearTimeout);
+        timeouts = [];
+
+        filaNotificacoes.forEach((item, index) => {
+          const tempo = (delayInicial * 1000) + (index * intervalo * 1000);
+          const tId = setTimeout(() => {
+            tocarSomAlerta();
+            const card = document.createElement('div');
+            card.className = 'card-ios-notif';
+            card.innerHTML = `
+              <div class="app-icone-ios" style="background: ${item.cor}">${item.sigla}</div>
+              <div class="corpo-notif">
+                <div class="topo-notif">
+                  <span class="nome-app-notif">${item.app}</span>
+                  <span class="tempo-notif">agora</span>
+                </div>
+                <div class="titulo-msg-notif">${item.titulo}</div>
+                <div class="texto-msg-notif">${item.msg}</div>
+              </div>
+            `;
+            palco.prepend(card);
+          }, tempo);
+          timeouts.push(tId);
+        });
+
+      } else {
+        timeouts.forEach(clearTimeout);
+      }
+    });
+  </script>
+</body>
+</html>
