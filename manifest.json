@@ -1,18 +1,18 @@
 {
-  "name": "Notificações Fakes iOS Pro",
-  "short_name": "NotifiOS",
+  "name": "Nome Do Seu App",
+  "short_name": "SeuApp",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#040406",
   "theme_color": "#040406",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
