@@ -1,6 +1,6 @@
 {
-  "name": "GerApp",
-  "short_name": "GA",
+  "name": "GerApp Notificacoes",
+  "short_name": "GerApp",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#040406",
