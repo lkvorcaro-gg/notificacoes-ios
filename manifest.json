@@ -1,6 +1,6 @@
 {
-  "name": "Nome Do Seu App",
-  "short_name": "SeuApp",
+  "name": "GerApp",
+  "short_name": "GA",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#040406",
