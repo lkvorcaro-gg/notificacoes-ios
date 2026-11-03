@@ -594,11 +594,6 @@
       position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
       width: 138px; height: 5px; border-radius: 99px; background: rgba(255,255,255,0.85);
     }
-    .hotspot-sair {
-      position: absolute; top: 12px; left: 16px; z-index: 10002;
-      background: rgba(0,0,0,0.25); color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 700;
-      padding: 6px 12px; border-radius: 99px; cursor: pointer; backdrop-filter: blur(8px);
-    }
   </style>
 </head>
 <body>
@@ -827,7 +822,7 @@
       <h3>
         <div class="app-header-info">
           <div class="icone-painel-wrapper">
-            <img src="Picpaylogo.png" alt="PicPay" onerror="this.outerHTML='PP'">
+            <img src="picpaylogo.png" alt="PicPay" onerror="this.outerHTML='PP'">
           </div>
           <div class="titulo-app-bloco">
             <span>PicPay</span>
@@ -909,8 +904,6 @@
 
   <!-- TELA DE BLOQUEIO DO IOS -->
   <div id="tela-bloqueio-ios">
-    <label for="toggle-cena" class="hotspot-sair">✕</label>
-
     <!-- DATA E RELÓGIO DA IMAGEM -->
     <div class="data-ios" id="dataTopo">Monday, 11 November</div>
     <div class="relogio-ios-17" id="relogioTopo">10:21</div>
@@ -939,6 +932,19 @@
   <script>
     let timeouts = [];
     let audioCtx = null;
+    let ultimoToque = 0;
+
+    // Detectar duplo toque na tela de bloqueio para sair
+    document.getElementById('tela-bloqueio-ios').addEventListener('click', function(e) {
+      const agora = new Date().getTime();
+      const tempoEntreCliques = agora - ultimoToque;
+      
+      // Se o tempo entre os cliques for menor que 300 milissegundos (duplo toque)
+      if (tempoEntreCliques < 300 && tempoEntreCliques > 0) {
+        document.getElementById('toggle-cena').checked = false;
+      }
+      ultimoToque = agora;
+    });
 
     function alternarVariacao(idApp) {
       const ativado = document.getElementById(`var-${idApp}`).checked;
@@ -1077,7 +1083,7 @@
             id: 'picpay',
             padraoNome: 'PicPay',
             cor: '#11c76f',
-            sigla: '<img src="Picpaylogo.png" onerror="this.outerHTML=\'PP\'">',
+            sigla: '<img src="picpaylogo.png" onerror="this.outerHTML=\'PP\'">',
             titulo: 'Você recebeu um Pix',
             gerarMsg: (val) => {
               const nomePicpay = document.getElementById('rem-picpay').value.trim() || 'Mariana Costa Silva';
