@@ -7,7 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Notificações Fakes iOS Pro</title>
+  <title>GerApp | Notificações Fakes iOS Pro</title>
   <style>
     /* Oculta a Ilha Dinâmica e a barra de status simulada */
     .dynamic-island, .notch, .status-bar, .ios-status-bar, .barra-topo-ios {
@@ -603,7 +603,7 @@
   <!-- PAINEL DE CONTROLE -->
   <div id="painel-diretor">
     <div class="topo-painel">
-      <span class="badge-diretor">NOTIFICAÇÕES FAKES IOS PRO</span>
+      <span class="badge-diretor">GERAPP - NOTIFICAÇÕES FAKES IOS PRO</span>
       <h1>Painel Premium de Notificações</h1>
       <p class="sub">Configure individualmente a quantidade, remetente e valores.</p>
     </div>
@@ -822,7 +822,7 @@
       <h3>
         <div class="app-header-info">
           <div class="icone-painel-wrapper">
-            <img src="Picpaylogo.png" alt="PicPay" onerror="this.outerHTML='PP'">
+            <img src="picpaylogo.png" alt="PicPay" onerror="this.outerHTML='PP'">
           </div>
           <div class="titulo-app-bloco">
             <span>PicPay</span>
@@ -894,11 +894,11 @@
     </div>
 
     <label for="toggle-cena" class="btn-gravar-cena" id="btnDisparar">
-      🚀 Iniciar Tela de Bloqueio iOS Pro
+      🚀 Iniciar Tela de Bloqueio GerApp
     </label>
 
     <div class="assinatura-dev">
-      desenvolvido por <span>LK VORCARO</span>
+      desenvolvido por <span>GERAPP</span>
     </div>
   </div>
 
@@ -939,7 +939,6 @@
       const agora = new Date().getTime();
       const tempoEntreCliques = agora - ultimoToque;
       
-      // Se o tempo entre os cliques for menor que 300 milissegundos (duplo toque)
       if (tempoEntreCliques < 300 && tempoEntreCliques > 0) {
         document.getElementById('toggle-cena').checked = false;
       }
@@ -1083,7 +1082,7 @@
             id: 'picpay',
             padraoNome: 'PicPay',
             cor: '#11c76f',
-            sigla: '<img src="Picpaylogo.png" onerror="this.outerHTML=\'PP\'">',
+            sigla: '<img src="picpaylogo.png" onerror="this.outerHTML=\'PP\'">',
             titulo: 'Você recebeu um Pix',
             gerarMsg: (val) => {
               const nomePicpay = document.getElementById('rem-picpay').value.trim() || 'Mariana Costa Silva';
