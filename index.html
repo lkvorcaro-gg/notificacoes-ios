@@ -204,6 +204,8 @@
     .grupo-campo:nth-of-type(5) { animation-delay: 0.40s; }
     .grupo-campo:nth-of-type(6) { animation-delay: 0.48s; }
     .grupo-campo:nth-of-type(7) { animation-delay: 0.56s; }
+    .grupo-campo:nth-of-type(8) { animation-delay: 0.64s; }
+    .grupo-campo:nth-of-type(9) { animation-delay: 0.72s; }
 
     .grupo-campo:hover {
       transform: translateY(-4px) scale(1.01);
@@ -866,6 +868,46 @@
       </div>
     </div>
 
+    <!-- 7. INSTAGRAM (NOTIFICAÇÕES ALEATÓRIAS) -->
+    <div class="grupo-campo" style="--cor-tema: #e1306c;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);">
+            <img src="instagramlogo.png" alt="Instagram" onerror="this.outerHTML='IG'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Instagram</span>
+            <small>Engajamento Aleatório</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-ig" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-ig" value="Instagram"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-ig" value="2" min="1" max="50"></div>
+      </div>
+    </div>
+
+    <!-- 8. FACEBOOK (NOTIFICAÇÕES ALEATÓRIAS) -->
+    <div class="grupo-campo" style="--cor-tema: #1877f2;">
+      <h3>
+        <div class="app-header-info">
+          <div class="icone-painel-wrapper" style="background: #1877f2;">
+            <img src="facebooklogo.png" alt="Facebook" onerror="this.outerHTML='FB'">
+          </div>
+          <div class="titulo-app-bloco">
+            <span>Facebook</span>
+            <small>Interações Aleatórias</small>
+          </div>
+        </div>
+        <label class="check-card"><input type="checkbox" id="chk-fb" checked> Exibir</label>
+      </h3>
+      <div class="linha-grid">
+        <div class="col-grid" style="flex: 2;"><label class="lbl-rotulo">Nome do App:</label><input type="text" id="app-fb" value="Facebook"></div>
+        <div class="col-grid" style="flex: 1;"><label class="lbl-rotulo">Qtd. Notificações:</label><input type="number" id="qtd-fb" value="2" min="1" max="50"></div>
+      </div>
+    </div>
+
     <!-- CONFIGURAÇÕES GERAIS DE CENA -->
     <div class="grupo-campo" style="--cor-tema: #2997ff;">
       <h3>
@@ -960,6 +1002,21 @@
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
 
+    // Atualiza dinamicamente o tempo de cada notificação ("agora", "há 1 min", "há 2 min", etc.)
+    function atualizarTemposNotificacoes() {
+      const agora = Date.now();
+      document.querySelectorAll('.tempo-notif[data-timestamp]').forEach(el => {
+        const criadoEm = parseInt(el.getAttribute('data-timestamp'), 10);
+        const diffMin = Math.floor((agora - criadoEm) / 60000);
+        if (diffMin < 1) {
+          el.textContent = 'agora';
+        } else {
+          el.textContent = `há ${diffMin} min`;
+        }
+      });
+    }
+    setInterval(atualizarTemposNotificacoes, 5000);
+
     document.getElementById('inputWallpaper').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -989,7 +1046,9 @@
     }
 
     function obterValorDoApp(idApp) {
-      const variar = document.getElementById(`var-${idApp}`).checked;
+      const elVar = document.getElementById(`var-${idApp}`);
+      if (!elVar) return '';
+      const variar = elVar.checked;
       if (!variar) {
         return document.getElementById(`val-${idApp}`).value || '100,00';
       }
@@ -1011,6 +1070,26 @@
       const valorFinal = parteInteira + (centavos / 100);
       return valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
+
+    const msgsAleatoriasIG = [
+      { titulo: 'Instagram', msg: 'caio_martins99 começou a seguir você.' },
+      { titulo: 'Instagram', msg: 'larissa.silva_ e outras 189 pessoas curtiram seu story.' },
+      { titulo: 'Direct', msg: 'pedro_henrique enviou uma mensagem: "Opa mano, me manda o link?"' },
+      { titulo: 'Instagram', msg: 'amanda.costa comentou: "Top demais!! 🔥👏"' },
+      { titulo: 'Instagram', msg: 'lucas_ferreira07 mencionou você no próprio story.' },
+      { titulo: 'Instagram', msg: 'julia.mendes e outras 148 pessoas curtiram seu reel.' },
+      { titulo: 'Instagram', msg: 'lucasdeferr0_ e outras 96 pessoas curtiram seu story.' },
+      { titulo: 'Instagram', msg: 'tharcia_martins69 começou a seguir você.' }
+    ];
+
+    const msgsAleatoriasFB = [
+      { titulo: 'Facebook', msg: 'Carlos Eduardo enviou uma solicitação de amizade.' },
+      { titulo: 'Facebook', msg: 'Fernanda Lima e outras 14 pessoas reagiram à sua publicação.' },
+      { titulo: 'Facebook', msg: 'Marcos Paulo comentou na sua foto: "Parabéns pelo resultado!"' },
+      { titulo: 'Facebook', msg: 'Você tem 3 novas sugestões de amizade hoje.' },
+      { titulo: 'Facebook', msg: 'Juliana Alves compartilhou a sua publicação.' },
+      { titulo: 'Facebook', msg: 'Roberto Almeida curtiu o seu comentário.' }
+    ];
 
     document.getElementById('toggle-cena').addEventListener('change', function() {
       if (this.checked) {
@@ -1091,6 +1170,20 @@
                 ? `Você recebeu um Pix de R$ ${val} da empresa ${nomePicpay} no PicPay.`
                 : `Você recebeu um Pix de R$ ${val} de ${nomePicpay} na sua conta PicPay.`;
             }
+          },
+          {
+            id: 'ig',
+            padraoNome: 'Instagram',
+            cor: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
+            sigla: '<img src="instagramlogo.png" onerror="this.outerHTML=\'IG\'">',
+            gerarConteudoAleatorio: () => msgsAleatoriasIG[Math.floor(Math.random() * msgsAleatoriasIG.length)]
+          },
+          {
+            id: 'fb',
+            padraoNome: 'Facebook',
+            cor: '#1877f2',
+            sigla: '<img src="facebooklogo.png" onerror="this.outerHTML=\'FB\'">',
+            gerarConteudoAleatorio: () => msgsAleatoriasFB[Math.floor(Math.random() * msgsAleatoriasFB.length)]
           }
         ];
 
@@ -1103,14 +1196,25 @@
             const nomeApp = document.getElementById(`app-${item.id}`).value || item.padraoNome;
 
             for (let i = 0; i < qtdApp; i++) {
-              const valorGerado = obterValorDoApp(item.id);
-              filaNotificacoes.push({
-                app: nomeApp,
-                cor: item.cor,
-                sigla: item.sigla,
-                titulo: item.titulo,
-                msg: item.gerarMsg(valorGerado)
-              });
+              if (item.gerarConteudoAleatorio) {
+                const sorteio = item.gerarConteudoAleatorio();
+                filaNotificacoes.push({
+                  app: nomeApp,
+                  cor: item.cor,
+                  sigla: item.sigla,
+                  titulo: sorteio.titulo,
+                  msg: sorteio.msg
+                });
+              } else {
+                const valorGerado = obterValorDoApp(item.id);
+                filaNotificacoes.push({
+                  app: nomeApp,
+                  cor: item.cor,
+                  sigla: item.sigla,
+                  titulo: item.titulo,
+                  msg: item.gerarMsg(valorGerado)
+                });
+              }
             }
           }
         });
@@ -1131,12 +1235,13 @@
             tocarSomAlerta();
             const card = document.createElement('div');
             card.className = 'card-ios-notif';
+            const timestampCriacao = Date.now();
             card.innerHTML = `
               <div class="app-icone-ios" style="background: ${item.cor}">${item.sigla}</div>
               <div class="corpo-notif">
                 <div class="topo-notif">
                   <span class="nome-app-notif">${item.app}</span>
-                  <span class="tempo-notif">agora</span>
+                  <span class="tempo-notif" data-timestamp="${timestampCriacao}">agora</span>
                 </div>
                 <div class="titulo-msg-notif">${item.titulo}</div>
                 <div class="texto-msg-notif">${item.msg}</div>
