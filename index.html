@@ -539,7 +539,7 @@
     /* PALCO DE NOTIFICAÇÕES */
     #palco-notificacoes {
       width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 9px;
-      overflow-y: auto; max-height: 60vh; padding-bottom: 20px; scrollbar-width: none; z-index: 5;
+      overflow-y: auto; overflow-x: hidden; max-height: 60vh; padding-bottom: 20px; scrollbar-width: none; z-index: 5;
     }
     #palco-notificacoes::-webkit-scrollbar { display: none; }
 
@@ -553,6 +553,12 @@
       display: flex; align-items: center; gap: 13px;
       animation: surgirCard 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       transform-origin: top center;
+      touch-action: pan-y;
+      cursor: grab;
+      will-change: transform, opacity;
+    }
+    .card-ios-notif:active {
+      cursor: grabbing;
     }
     @keyframes surgirCard {
       0% { opacity: 0; transform: translateY(-28px) scale(0.93); }
@@ -1017,6 +1023,100 @@
     }
     setInterval(atualizarTemposNotificacoes, 5000);
 
+    // Função para permitir arrastar a notificação para o lado para excluir (Swipe)
+    function ativarSwipeParaExcluir(card) {
+      let startX = 0;
+      let startY = 0;
+      let currentX = 0;
+      let isDragging = false;
+      let isHorizontal = null;
+
+      const iniciarArraste = (x, y) => {
+        startX = x;
+        startY = y;
+        currentX = 0;
+        isDragging = true;
+        isHorizontal = null;
+        card.style.animation = 'none';
+        card.style.transition = 'none';
+      };
+
+      const moverArraste = (x, y, e) => {
+        if (!isDragging) return;
+        const dx = x - startX;
+        const dy = y - startY;
+
+        if (isHorizontal === null) {
+          if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+            isHorizontal = Math.abs(dx) > Math.abs(dy);
+          }
+        }
+
+        if (isHorizontal) {
+          if (e && e.cancelable) e.preventDefault();
+          currentX = dx;
+          const opacidade = Math.max(0, 1 - Math.abs(currentX) / 260);
+          card.style.transform = `translateX(${currentX}px)`;
+          card.style.opacity = opacidade;
+        }
+      };
+
+      const finalizarArraste = () => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        if (isHorizontal && Math.abs(currentX) > 100) {
+          const direcao = currentX > 0 ? 420 : -420;
+          card.style.transition = 'transform 0.28s ease-out, opacity 0.28s ease-out';
+          card.style.transform = `translateX(${direcao}px)`;
+          card.style.opacity = '0';
+
+          setTimeout(() => {
+            card.style.height = card.offsetHeight + 'px';
+            card.style.overflow = 'hidden';
+            card.style.transition = 'height 0.22s ease, padding 0.22s ease, margin 0.22s ease, border 0.22s ease';
+            requestAnimationFrame(() => {
+              card.style.height = '0px';
+              card.style.paddingTop = '0px';
+              card.style.paddingBottom = '0px';
+              card.style.marginTop = '-9px';
+              card.style.borderWidth = '0px';
+            });
+            setTimeout(() => card.remove(), 220);
+          }, 260);
+        } else if (isHorizontal) {
+          card.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease';
+          card.style.transform = 'translateX(0px)';
+          card.style.opacity = '1';
+        }
+      };
+
+      // Eventos Touch (Celular)
+      card.addEventListener('touchstart', (e) => {
+        iniciarArraste(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+
+      card.addEventListener('touchmove', (e) => {
+        moverArraste(e.touches[0].clientX, e.touches[0].clientY, e);
+      }, { passive: false });
+
+      card.addEventListener('touchend', finalizarArraste);
+      card.addEventListener('touchcancel', finalizarArraste);
+
+      // Eventos Mouse (PC)
+      card.addEventListener('mousedown', (e) => {
+        iniciarArraste(e.clientX, e.clientY);
+        const onMouseMove = (ev) => moverArraste(ev.clientX, ev.clientY, ev);
+        const onMouseUp = () => {
+          finalizarArraste();
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        };
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+    }
+
     document.getElementById('inputWallpaper').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -1073,13 +1173,27 @@
 
     const msgsAleatoriasIG = [
       { titulo: 'Instagram', msg: 'caio_martins99 começou a seguir você.' },
-      { titulo: 'Instagram', msg: 'larissa.silva_ e outras 189 pessoas curtiram seu story.' },
+      { titulo: 'Instagram', msg: 'larissa.silva_ e outras 24 pessoas curtiram seu story.' },
       { titulo: 'Direct', msg: 'pedro_henrique enviou uma mensagem: "Opa mano, me manda o link?"' },
       { titulo: 'Instagram', msg: 'amanda.costa comentou: "Top demais!! 🔥👏"' },
       { titulo: 'Instagram', msg: 'lucas_ferreira07 mencionou você no próprio story.' },
-      { titulo: 'Instagram', msg: 'julia.mendes e outras 148 pessoas curtiram seu reel.' },
-      { titulo: 'Instagram', msg: 'lucasdeferr0_ e outras 96 pessoas curtiram seu story.' },
-      { titulo: 'Instagram', msg: 'tharcia_martins69 começou a seguir você.' }
+      { titulo: 'Instagram', msg: 'julia.mendes e outras 48 pessoas curtiram seu reel.' },
+      { titulo: 'Direct', msg: 'bianca_rodrigues respondeu ao seu story: "Como funciona isso?? 😍"' },
+      { titulo: 'Instagram', msg: 'gabriel.santos_ começou a seguir você.' },
+      { titulo: 'Direct', msg: 'rafael_oliveira enviou uma mensagem de áudio (0:14).' },
+      { titulo: 'Instagram', msg: 'mari.souza_oficial e outras 112 pessoas curtiram sua publicação.' },
+      { titulo: 'Instagram', msg: 'thiago_lima98 comentou no seu reel: "Brabo demais, referência! 🚀"' },
+      { titulo: 'Direct', msg: 'camila.alves_ reagiu com 🔥 ao seu story.' },
+      { titulo: 'Instagram', msg: 'felipe_costa e outras 19 pessoas começaram a seguir você.' },
+      { titulo: 'Direct', msg: 'leticia.moraes enviou um reel de @empreendedor.br.' },
+      { titulo: 'Instagram', msg: 'bruno_kashima marcou você em uma publicação.' },
+      { titulo: 'Instagram', msg: 'isabela.martins_ curtiu seu comentário: "Sensacional!"' },
+      { titulo: 'Direct', msg: 'diego.rocha_ enviou uma mensagem: "Cara, vi teu story agora, funciona mesmo?"' },
+      { titulo: 'Instagram', msg: 'vitoria_santos01 repostou seu story.' },
+      { titulo: 'Instagram', msg: 'guilherme.dev iniciou um vídeo ao vivo. Assista antes que acabe!' },
+      { titulo: 'Direct', msg: 'natali_ferreira respondeu à sua nota: "Verdade viu kkkk"' },
+      { titulo: 'Instagram', msg: 'rodrigo.almeida_ salvou o seu reel.' },
+      { titulo: 'Direct', msg: 'carol_menezes enviou uma mensagem: "Bom dia! Ainda tem vaga disponível?"' }
     ];
 
     const msgsAleatoriasFB = [
@@ -1088,7 +1202,23 @@
       { titulo: 'Facebook', msg: 'Marcos Paulo comentou na sua foto: "Parabéns pelo resultado!"' },
       { titulo: 'Facebook', msg: 'Você tem 3 novas sugestões de amizade hoje.' },
       { titulo: 'Facebook', msg: 'Juliana Alves compartilhou a sua publicação.' },
-      { titulo: 'Facebook', msg: 'Roberto Almeida curtiu o seu comentário.' }
+      { titulo: 'Facebook', msg: 'Roberto Almeida curtiu o seu comentário.' },
+      { titulo: 'Facebook', msg: 'André Luiz aceitou sua solicitação de amizade.' },
+      { titulo: 'Facebook', msg: 'Patrícia Gomes e outras 37 pessoas curtiram sua foto de capa.' },
+      { titulo: 'Marketplace', msg: 'Ricardo Souza enviou uma mensagem sobre seu anúncio: "Ainda está disponível?"' },
+      { titulo: 'Facebook', msg: 'Renata Oliveira marcou você e outras 4 pessoas em uma foto.' },
+      { titulo: 'Facebook', msg: 'Hoje é o aniversário de Marcelo Henrique. Deseje felicitações!' },
+      { titulo: 'Facebook', msg: 'Daniela Costa reagiu com ❤️ ao seu story no Facebook.' },
+      { titulo: 'Grupos', msg: 'Lucas Mendes fez uma nova publicação em Vendas & Negócios Digitais.' },
+      { titulo: 'Facebook', msg: 'Lembranças: Você tem 4 lembranças para rever hoje.' },
+      { titulo: 'Facebook', msg: 'Eduardo Ribeiro respondeu ao seu comentário: "Com certeza, falou tudo!"' },
+      { titulo: 'Facebook', msg: 'Beatriz Santos e outras 8 pessoas enviaram solicitações de amizade.' },
+      { titulo: 'Facebook', msg: 'Seu reel atingiu mais de 1.500 reproduções hoje. Veja os insights!' },
+      { titulo: 'Facebook', msg: 'Gustavo Pereira convidou você para curtir a página Empreender Online.' },
+      { titulo: 'Facebook', msg: 'Vanessa Martins comentou no seu vídeo: "Muito bom, explica super bem 👏"' },
+      { titulo: 'Marketplace', msg: 'Leandro Silva perguntou: "Aceita Pix? Consigo buscar hoje."' },
+      { titulo: 'Facebook', msg: 'Priscila Nogueira mencionou você em um comentário.' },
+      { titulo: 'Facebook', msg: 'Fábio Júnior e outras 52 pessoas reagiram com 😮 ao seu post.' }
     ];
 
     document.getElementById('toggle-cena').addEventListener('change', function() {
@@ -1247,6 +1377,7 @@
                 <div class="texto-msg-notif">${item.msg}</div>
               </div>
             `;
+            ativarSwipeParaExcluir(card);
             palco.prepend(card);
           }, tempo);
           timeouts.push(tId);
